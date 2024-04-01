@@ -1,0 +1,43 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: terraform-task
+spec:
+  params:
+    - name: project
+      description: "GCP Project ID"
+      type: string
+      default: "vision-ai-project-409510"
+    - name: region
+      description: "GCP Region"
+      type: string
+      default: "us-central1"
+  steps:
+    - name: git-clone
+      image: alpine/git
+      script: |
+        git clone https://github.com/ArunKumarP95/PubSubDemo.git
+      resources:
+        inputs:
+          - name: workspace
+            type: git
+    - name: terraform-init
+      image: hashicorp/terraform
+      script: |
+        cd /workspace/PubSubDemo
+        terraform init
+    - name: terraform-plan
+      image: hashicorp/terraform
+      script: |
+        cd /workspace/PubSubDemo
+        terraform plan
+    - name: terraform-apply
+      image: hashicorp/terraform
+      script: |
+        cd /workspace/PubSubDemo
+        terraform apply --auto-approve
+      env:
+        - name: GOOGLE_PROJECT_ID
+          value: $(params.project)
+        - name: GOOGLE_REGION
+          value: $(params.region)

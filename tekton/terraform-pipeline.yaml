@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: terraform-pipeline
+spec:
+  tasks:
+    - name: terraform-task
+      taskRef:
+        name: terraform-task
+      params:
+        - name: project
+          value: "vision-ai-project-409510"
+        - name: region
+          value: "us-central1"
